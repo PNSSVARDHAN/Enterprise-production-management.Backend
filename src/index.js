@@ -15,11 +15,12 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const machineAllocationRoutes = require("./routes/machineAllocationRoutes");
 const employeeDashboardRoutes = require("./routes/employeeDashboardRoutes");
 const rfidRoutes = require("./routes/rfidRoutes");
-const authRoutes = require("../routes/authRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const RegScan = require("./models/RegScan");  // ✅ Corrected path
 const Order = require("./models/Order");
 const OrderStep = require("./models/OrderStep");
+
 // Initialize Express App
 const app = express();
 const PORT = process.env.PORT || 5000;
