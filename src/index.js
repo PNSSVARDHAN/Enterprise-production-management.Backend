@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 5000;
 
 // ✅ CORS Configuration (Allow all origins for testing)
 const corsOptions = {
-    origin: "http://localhost:3000", // Allow all origins (for testing)
+    origin: "*", // Allow all origins (for testing)
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: ["Content-Type", "Authorization"]
 };
