@@ -15,6 +15,7 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 const machineAllocationRoutes = require("./routes/machineAllocationRoutes");
 const employeeDashboardRoutes = require("./routes/employeeDashboardRoutes");
 const rfidRoutes = require("./routes/rfidRoutes");
+const authRoutes = require("../routes/authRoutes");
 
 const RegScan = require("./models/RegScan");  // ✅ Corrected path
 const Order = require("./models/Order");
@@ -43,6 +44,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/machine-allocations", machineAllocationRoutes);
 app.use("/api/employee-dashboard", employeeDashboardRoutes); // Fixed duplicate path
 app.use("/api/rfid", rfidRoutes);
+app.use("/api/auth", authRoutes);
 
 // New route
 app.get("/api/dashboard/office", (req, res) => {
@@ -88,7 +90,7 @@ const sendLiveUpdate = async () => {
 };
 
 // Send updates every 5 seconds
-setInterval(sendLiveUpdate, 5000);
+setInterval(sendLiveUpdate, 3000);
 
 // Start Server
 sequelize.sync({ alter: true })
