@@ -28,27 +28,33 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 🔹 User Login
+
 router.post("/login", async (req, res) => {
-  try {
     const { email, password } = req.body;
 
-    // Find user by email
-    const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(400).json({ message: "Invalid email or password" });
+    try {
+        const user = await User.findOne({ where: { email } });
 
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
+        if (!user) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
 
-    // Generate JWT Token
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+        const isMatch = await bcrypt.compare(password, user.password);
 
-    res.json({ message: "Login successful", token });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
+        if (!isMatch) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+        res.json({ message: "Login successful", token });
+    } catch (error) {
+        console.error("❌ Login Error:", error);
+        res.status(500).json({ error: "Server error" });
+    }
 });
+
+module.exports = router;
+
 
 module.exports = router;
