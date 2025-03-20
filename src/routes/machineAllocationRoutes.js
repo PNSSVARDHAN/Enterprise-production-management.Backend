@@ -3,6 +3,7 @@ const MachineAllocation = require("../models/MachineAllocation");
 const EmployeeTask = require("../models/EmployeeTask");
 const Machine = require("../models/Machine");
 
+
 const router = express.Router();
 
 // ✅ Fetch Assigned Machines with Order ID and Step Name
@@ -11,12 +12,17 @@ router.get("/", async (req, res) => {
         const allocations = await MachineAllocation.findAll({
             attributes: ["order_id", "step", "machine_id", "status"]
         });
-        res.status(200).json(allocations);
+
+        // ✅ Remove machines that have completed their tasks
+        const activeAllocations = allocations.filter(machine => machine.status !== "Available");
+
+        res.status(200).json(activeAllocations);
     } catch (error) {
         console.error("❌ Error fetching machine allocations:", error);
         res.status(500).json({ error: "Error fetching machine allocations" });
     }
 });
+
 
 
 // ✅ Update Machine Status (Check Latest Task & Set to Available if Completed)
@@ -117,7 +123,7 @@ router.post("/free-machine", async (req, res) => {
 
         // 🛑 Check if any incomplete tasks exist for the machine
         const pendingTasks = await EmployeeTask.findOne({ 
-            where: { machine_allocation_id: machine_id, status: { $ne: "Completed" } }
+            where: { machine_id: machine_id, status: { [Op.ne]: "Completed" } }
         });
 
         if (pendingTasks) {
@@ -134,6 +140,5 @@ router.post("/free-machine", async (req, res) => {
         res.status(500).json({ error: "Error freeing machine" });
     }
 });
-
 
 module.exports = router;
