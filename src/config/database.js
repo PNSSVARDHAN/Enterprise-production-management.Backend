@@ -1,4 +1,4 @@
-/*const { Sequelize } = require("sequelize");
+/***const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
 // Create a new Sequelize instance
@@ -6,8 +6,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
     host: process.env.DB_HOST,
     dialect: "postgres",
     port: process.env.DB_PORT,
-    logging: false, 
-     // Disable SQL query logging for cleaner output
+    logging: false,  // Disable SQL query logging for cleaner output
 });
 
 // Test database connection
@@ -15,12 +14,8 @@ sequelize.authenticate()
     .then(() => console.log("✅ Database Connected Successfully"))
     .catch((err) => console.error("❌ Database Connection Failed:", err));
 
-module.exports = sequelize; */
+module.exports = sequelize; **/
 
-
-/***************************************************************************************************************************************/
-
-/*** for cloud database  */
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
