@@ -17,7 +17,7 @@ const employeeDashboardRoutes = require("./routes/employeeDashboardRoutes");
 const rfidRoutes = require("./routes/rfidRoutes");
 const authRoutes = require("./routes/authRoutes");
 
-const RegScan = require("./models/RegScan");  // ✅ Corrected path
+const RegScan = require("./models/RegScan");  
 const Order = require("./models/Order");
 const OrderStep = require("./models/OrderStep");
 
@@ -43,10 +43,9 @@ app.use("/api/machines", machineRoutes);
 app.use("/api/employee-tasks", employeeTaskRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/machine-allocations", machineAllocationRoutes);
-app.use("/api/employee-dashboard", employeeDashboardRoutes); // Fixed duplicate path
+app.use("/api/employee-dashboard", employeeDashboardRoutes); 
 app.use("/api/rfid", rfidRoutes);
 app.use("/api/auth", authRoutes);
-
 // New route
 app.get("/api/dashboard/office", (req, res) => {
     res.json({ message: "CORS is working!" });

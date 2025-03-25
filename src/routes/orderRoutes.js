@@ -93,7 +93,7 @@ router.get("/progress", async (req, res) => {
 
         // ✅ Fetch All Orders
         const orders = await Order.findAll({
-            attributes: ["id", "order_number", "product", "quantity"],
+            attributes: ["id", "order_number", "product", "quantity","status"],
             include: [
                 {
                     model: OrderStep, // ✅ Fetch all steps for each order
@@ -146,6 +146,8 @@ router.get("/progress", async (req, res) => {
 
                 return {
                     id: order.id,
+                    order_number: order.order_number,
+                    status: order.status,
                     product: order.product,
                     quantity: order.quantity,
                     completed: totalCompleted, // Total completed across all steps

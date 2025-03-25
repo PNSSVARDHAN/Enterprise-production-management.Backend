@@ -1,4 +1,5 @@
-/***const { Sequelize } = require("sequelize");
+/** 
+const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
 // Create a new Sequelize instance
@@ -14,7 +15,9 @@ sequelize.authenticate()
     .then(() => console.log("✅ Database Connected Successfully"))
     .catch((err) => console.error("❌ Database Connection Failed:", err));
 
-module.exports = sequelize; **/
+module.exports = sequelize; */
+
+
 
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
