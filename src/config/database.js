@@ -1,4 +1,4 @@
-/** 
+
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
@@ -15,10 +15,10 @@ sequelize.authenticate()
     .then(() => console.log("✅ Database Connected Successfully"))
     .catch((err) => console.error("❌ Database Connection Failed:", err));
 
-module.exports = sequelize; */
+module.exports = sequelize; 
 
 
-
+/**
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
@@ -41,5 +41,5 @@ sequelize.authenticate()
     .then(() => console.log("✅ Database Connected Successfully"))
     .catch((err) => console.error("❌ Database Connection Failed:", err));
 
-module.exports = sequelize;
+module.exports = sequelize;  **/
 

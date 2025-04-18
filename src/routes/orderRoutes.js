@@ -6,6 +6,7 @@ const OrderStep = require("../models/OrderStep");
 const MachineAllocation = require("../models/MachineAllocation");
 const EmployeeTask = require("../models/EmployeeTask");
 const Employee = require("../models/Employee");
+ 
 
 const router = express.Router();
 
@@ -93,7 +94,7 @@ router.get("/progress", async (req, res) => {
 
         // ✅ Fetch All Orders
         const orders = await Order.findAll({
-            attributes: ["id", "order_number", "product", "quantity","status"],
+            attributes: ["id", "order_number", "product", "quantity","status","current_stage"],
             include: [
                 {
                     model: OrderStep, // ✅ Fetch all steps for each order
@@ -152,6 +153,7 @@ router.get("/progress", async (req, res) => {
                     quantity: order.quantity,
                     completed: totalCompleted, // Total completed across all steps
                     steps: stepsWithProgress, // Detailed step-wise completion
+                    current_stage : order.current_stage, // Current stage of the order
                 };
             })
         );
@@ -218,6 +220,41 @@ router.put("/update/:orderId", async (req, res) => {
         res.status(500).json({ error: "Error updating order" });
     }
 });
+
+
+
+
+
+
+
+// routes/orders.js
+router.post('/update-stage', async (req, res) => {
+    try {
+      const { id, current_stage } = req.body;
+  
+      console.log(`Received request to update Order ID: ${id}, New Stage: ${current_stage}`);
+  
+      if (!id || !current_stage) {
+        return res.status(400).json({ error: 'Missing id or current_stage' });
+      }
+  
+      const order = await Order.findByPk(id);
+  
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+      // Update stage
+      order.current_stage = current_stage;
+      await order.save();
+  
+      return res.json({ message: 'Stage updated successfully', order });
+    } catch (error) {
+      console.error('Error updating stage:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+  
 
 
 module.exports = router;

@@ -24,6 +24,23 @@ const Order = sequelize.define("Order", {
         type: DataTypes.STRING,
         defaultValue: "Pending",  // Pending, In Progress, Completed
     },
+    
+    current_stage: {
+        type: DataTypes.ENUM(
+          "Cutting Started",
+          "Cutting Completed",
+          "Sewing is in progress",
+          "Sewing Completed",
+          "Quality Check in progress",
+          "Quality Check Completed",
+          "Packing is in progress",
+          "Packing Completed",
+          "Ready for Dispatch",
+          "Dispatched",
+        ),
+        defaultValue: "Cutting",
+      },    
+
 }, {
     timestamps: true,  // Adds createdAt & updatedAt fields
 });

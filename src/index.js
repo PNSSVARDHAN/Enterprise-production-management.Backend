@@ -46,6 +46,7 @@ app.use("/api/machine-allocations", machineAllocationRoutes);
 app.use("/api/employee-dashboard", employeeDashboardRoutes); 
 app.use("/api/rfid", rfidRoutes);
 app.use("/api/auth", authRoutes);
+
 // New route
 app.get("/api/dashboard/office", (req, res) => {
     res.json({ message: "CORS is working!" });
