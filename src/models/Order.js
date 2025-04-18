@@ -27,7 +27,7 @@ const Order = sequelize.define("Order", {
     
     current_stage: {
         type: DataTypes.ENUM(
-          "Cutting",
+          "Cutting should be started",
           "Cutting Started",
           "Cutting Completed",
           "Sewing is in progress",
@@ -39,7 +39,7 @@ const Order = sequelize.define("Order", {
           "Ready for Dispatch",
           "Dispatched",
         ),
-        defaultValue: "Cutting",
+        defaultValue: "Cutting should be started",
       },    
 
 }, {
