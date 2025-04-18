@@ -27,6 +27,7 @@ const Order = sequelize.define("Order", {
     
     current_stage: {
         type: DataTypes.ENUM(
+          "Cutting",
           "Cutting Started",
           "Cutting Completed",
           "Sewing is in progress",
