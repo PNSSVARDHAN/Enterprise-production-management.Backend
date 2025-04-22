@@ -112,4 +112,35 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+
+
+const EmployeeTaskHistory = require("../models/EmployeeTaskHistory"); // Import your model
+
+router.get("/history/:employeeId", async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+
+        if (!employeeId) {
+            return res.status(400).json({ error: "Employee ID is required" });
+        }
+
+        const historyRecords = await EmployeeTaskHistory.findAll({
+            where: { employee_id: employeeId },
+            attributes: ["id", "employee_id", "order_Number", "Step_Name", "machine_number", "target", "working_date"], // 🛠 Only these fields
+            order: [["working_date", "DESC"]], // 📅 latest first
+        });
+
+        if (historyRecords.length === 0) {
+            return res.status(404).json({ message: "No history records found for this employee." });
+        }
+
+        res.status(200).json({ history: historyRecords });
+
+    } catch (error) {
+        console.error("Error fetching task history:", error);
+        res.status(500).json({ error: "Failed to fetch task history", details: error.message });
+    }
+});
+
 module.exports = router;
+
