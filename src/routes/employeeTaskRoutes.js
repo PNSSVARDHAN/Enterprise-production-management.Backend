@@ -2,8 +2,9 @@ const express = require("express");
 const EmployeeTask = require("../models/EmployeeTask");
 const MachineAllocation = require("../models/MachineAllocation");
 const Employee = require("../models/Employee");
-
+const Order = require("../models/Order");
 const router = express.Router();
+const  EmployeeTaskHistory = require("../models/EmployeeTaskHistory"); // Import both models
 
 router.post("/assign", async (req, res) => {
     try {
@@ -13,15 +14,25 @@ router.post("/assign", async (req, res) => {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        // ✅ Check if task already exists for the machine step
         let task = await EmployeeTask.findOne({ where: { machine_allocation_id } });
 
         if (task) {
-            // ✅ Update existing task (Reassign)
+            // ✅ Save previous task details in history
+            await EmployeeTaskHistory.create({
+                employee_id: task.employee_id,
+                machine_allocation_id: task.machine_allocation_id,
+                target: task.target,
+                duration: task.duration,
+                action_type: 'REASSIGN',      // 👈 Optional: you can use REASSIGN / UPDATE / etc.
+                action_time: new Date()
+            });
+
+            // ✅ Update existing task
             await task.update({ employee_id, target, duration });
-            return res.status(200).json({ message: "Task updated successfully", task });
+
+            return res.status(200).json({ message: "Task updated successfully", updatedTask: task });
         } else {
-            // ✅ Create a new task if none exists
+            // ✅ Create new task if none exists
             const newTask = await EmployeeTask.create({ employee_id, machine_allocation_id, target, duration });
             return res.status(201).json({ message: "Task assigned successfully", newTask });
         }
@@ -30,6 +41,7 @@ router.post("/assign", async (req, res) => {
         res.status(500).json({ error: "Error assigning employee" });
     }
 });
+
 
 // ✅ Fetch All Employee Tasks
 router.get("/", async (req, res) => {

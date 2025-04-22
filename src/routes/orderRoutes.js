@@ -255,6 +255,18 @@ router.post('/update-stage', async (req, res) => {
     }
   });
   
+  // Example Node.js route
+router.get('/api/orders/:orderId/steps', async (req, res) => {
+    const { orderId } = req.params;
+    try {
+      const steps = await OrderStep.findAll({ where: { order_id: orderId } });
+      res.json(steps);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error fetching steps" });
+    }
+  });
+  
 
 
 module.exports = router;

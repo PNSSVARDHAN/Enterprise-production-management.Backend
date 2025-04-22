@@ -86,20 +86,24 @@ router.post("/assign", async (req, res) => {
             return res.status(400).json({ error: "Missing order_id, step, or machine_id" });
         }
 
-        // ✅ Check if the step already has a machine assigned
-        const existingStepAssignment = await MachineAllocation.findOne({ where: { order_id, step } });
-        if (existingStepAssignment) {
-            return res.status(400).json({ error: `Step ${step} in Order ${order_id} already has Machine ${existingStepAssignment.machine_id}` });
-        }
+        // // ✅ Check if the step already has a machine assigned
+        // const existingStepAssignment = await MachineAllocation.findOne({ where: { order_id, step } });
+        // if (existingStepAssignment) {
+        //     return res.status(400).json({ error: `Step ${step} in Order ${order_id} already has Machine ${existingStepAssignment.machine_id}` });
+        // }
 
         // ✅ Check if the machine is already assigned to another step
         const existingMachineAssignment = await MachineAllocation.findOne({ where: { machine_id } });
         if (existingMachineAssignment) {
-            return res.status(400).json({ error: `Machine ${machine_id} is already assigned to Order ${existingMachineAssignment.order_id}, Step ${existingMachineAssignment.step}` });
+            return res.status(400).json({ error: `Machine ${machine_id} is already assigned to Order` });
         }
 
         // ✅ Assign the machine to the step
         const allocation = await MachineAllocation.create({ order_id, step, machine_id, status: "Assigned" });
+        await Machine.update(
+            { status: "Busy" }, // fields you want to update
+            { where: { id: machine_id } } // which machine to update
+          );
 
         console.log("✅ Machine assigned successfully:", allocation);
         res.status(201).json({ message: "✅ Machine assigned successfully!", allocation });
@@ -132,7 +136,7 @@ router.post("/free-machine", async (req, res) => {
 
         // ✅ Free the machine by updating status
         await MachineAllocation.update({ status: "Available" }, { where: { machine_id } });
-
+        await Machine.update({ status: "Available" },{ where: { machine_id } } );
         console.log("✅ Machine is now free:", machine_id);
         res.status(200).json({ message: `✅ Machine ${machine_id} is now free and ready to use.` });
     } catch (error) {

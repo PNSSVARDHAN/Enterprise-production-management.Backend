@@ -19,10 +19,14 @@ const OrderStep = sequelize.define("OrderStep", {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-    }
+    },
+    completed: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+    },
 }, {
     timestamps: false
-});
+}); 
 
 // Define relationship
 Order.hasMany(OrderStep, { foreignKey: "order_id" });
