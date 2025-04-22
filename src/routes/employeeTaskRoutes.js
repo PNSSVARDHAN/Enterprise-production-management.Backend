@@ -102,7 +102,8 @@ router.get("/assigned", async (req, res) => {
         const tasks = await EmployeeTask.findAll({
             include: [
                 { model: Employee, attributes: ["id", "name", "rfid"] },
-                { model: MachineAllocation, attributes: ["id", "step", "machine_id"] }
+                { model: MachineAllocation, attributes: ["id", "step", "machine_id"] },
+                {model : EmployeeTask,attributes:["crearedAt","updatedAt"]}
             ],
             order: [["createdAt", "ASC"]]
         });

@@ -222,11 +222,6 @@ router.put("/update/:orderId", async (req, res) => {
 });
 
 
-
-
-
-
-
 // routes/orders.js
 router.post('/update-stage', async (req, res) => {
     try {
@@ -266,6 +261,8 @@ router.get('/api/orders/:orderId/steps', async (req, res) => {
       res.status(500).json({ message: "Error fetching steps" });
     }
   });
+  
+
   
 
 
