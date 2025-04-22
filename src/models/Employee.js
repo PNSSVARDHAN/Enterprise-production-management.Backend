@@ -20,4 +20,5 @@ const Employee = sequelize.define("Employee", {
     timestamps: true,  // Automatically adds createdAt & updatedAt
 });
 
+
 module.exports = Employee;
