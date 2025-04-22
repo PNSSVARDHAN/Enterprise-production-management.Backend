@@ -4,6 +4,7 @@ const EmployeeTask = require("../models/EmployeeTask");
 const Employee = require("../models/Employee");
 const MachineAllocation = require("../models/MachineAllocation");
 const OrderStep = require("../models/OrderStep");
+const EmployeeTaskHistory = require("../models/EmployeeTaskHistory");  // Import the history model
 const router = express.Router();
 
 // ✅ Log RFID Scan & Increment Work Count
@@ -26,7 +27,7 @@ router.post("/scan", async (req, res) => {
         // ✅ Find the Oldest Unfinished Task
         const tasks = await EmployeeTask.findAll({
             where: { employee_id: employee.id },
-            order: [["createdAt", "ASC"]],
+            order: [["createdAt", "ASC"]],  // Sort tasks by created date
         });
 
         if (tasks.length === 0) {
@@ -90,6 +91,19 @@ router.post("/scan", async (req, res) => {
 
         // ✅ Log the RFID Scan
         await RFIDScan.create({ employee_id: employee.id, task_id: taskToUpdate.id });
+
+        // ✅ Insert Task History when Target and Completed are equal
+        if (updatedCompleted >= taskToUpdate.target) {
+            await EmployeeTaskHistory.create({
+                employee_id: employee.id,
+                order_Number: machineAllocation.order_id,
+                Step_Name: machineAllocation.step,
+                machine_number: machineAllocation.machine_id,
+                target: taskToUpdate.target,
+                working_date: new Date(),
+            });
+            console.log(`Task completed: Employee ${employee.name} ➡️ Task ${taskToUpdate.id} logged in history`);
+        }
 
         console.log(` Scan Success: Employee ${employee.name} ➡️ Step ${machineAllocation.step} ➡️ OrderStep Updated`);
 

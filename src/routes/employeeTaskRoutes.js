@@ -17,15 +17,6 @@ router.post("/assign", async (req, res) => {
         let task = await EmployeeTask.findOne({ where: { machine_allocation_id } });
 
         if (task) {
-            // ✅ Save previous task details in history
-            await EmployeeTaskHistory.create({
-                employee_id: task.employee_id,
-                machine_allocation_id: task.machine_allocation_id,
-                target: task.target,
-                duration: task.duration,
-                action_type: 'REASSIGN',      // 👈 Optional: you can use REASSIGN / UPDATE / etc.
-                action_time: new Date()
-            });
 
             // ✅ Update existing task
             await task.update({ employee_id, target, duration });

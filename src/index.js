@@ -20,21 +20,22 @@ const authRoutes = require("./routes/authRoutes");
 const RegScan = require("./models/RegScan");  
 const Order = require("./models/Order");
 const OrderStep = require("./models/OrderStep");
+const EmployeeTaskHistory = require("./models/EmployeeTaskHistory");
+
 
 // Initialize Express App
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ CORS Configuration (Allow all origins for testing)
 const corsOptions = {
-    origin: "*", // Allow all origins (for testing)
+    origin: "*", 
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: ["Content-Type", "Authorization"]
 };
 
-app.use(cors(corsOptions)); // ✅ Apply CORS Middleware
+app.use(cors(corsOptions)); 
 app.use(bodyParser.json());
-app.use(express.json()); // ✅ Apply express.json() Middleware
+app.use(express.json()); 
 
 // ✅ Routes
 app.use("/api/employees", employeeRoutes);
