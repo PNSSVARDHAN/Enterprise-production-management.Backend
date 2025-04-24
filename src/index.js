@@ -100,3 +100,5 @@ sequelize.sync({ alter: true })
         server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
     })
     .catch((err) => console.error("❌ Database Sync Failed:", err));
+
+////testing 
