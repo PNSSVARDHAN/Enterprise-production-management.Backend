@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const {DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
 const User = sequelize.define("User", {
@@ -22,7 +22,7 @@ const User = sequelize.define("User", {
     role: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: 'Null',   // 👈 Default role if not specified
+        defaultValue: 'Null',   
     },
 });
 

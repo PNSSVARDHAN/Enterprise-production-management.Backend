@@ -109,9 +109,16 @@ router.post("/complete", async (req, res) => {
 router.get("/assigned", async (req, res) => {
     try {
         const tasks = await EmployeeTask.findAll({
+            // attributes: ['createdAt', 'updatedAt'], 
             include: [
-                { model: Employee, attributes: ["id", "name", "rfid"] },
-                { model: MachineAllocation, attributes: ["id", "step", "machine_id"] }
+                { 
+                    model: Employee, 
+                    attributes: ["id", "name", "rfid"] 
+                },
+                { 
+                    model: MachineAllocation, 
+                    attributes: ["id", "step", "machine_id"] 
+                }
             ],
             order: [["createdAt", "ASC"]]
         });
@@ -122,6 +129,7 @@ router.get("/assigned", async (req, res) => {
         res.status(500).json({ error: "Error fetching tasks" });
     }
 });
+
 
 // ✅ Update Task
 router.post("/update/:task_id", async (req, res) => {

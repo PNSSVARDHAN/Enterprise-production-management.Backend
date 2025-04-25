@@ -165,7 +165,6 @@ router.get("/orderstatus/:orderId", async (req, res) => {
 
 //// testing the graphs 
 
-
 router.get("/orders-productivity", async (req, res) => {
     try {
         const orders = await Order.findAll({
@@ -198,13 +197,43 @@ router.get("/orders-productivity", async (req, res) => {
                                 "employee_id",
                                 [sequelize.fn("SUM", sequelize.col("completed")), "total_completed"]
                             ],
-                            group: ["employee_id", "id"],
+                            group: ["employee_id", "id"]
                         },
                     ],
                 },
             ],
-            group: ["Order.id", "MachineAllocations.id", "MachineAllocations->EmployeeTasks.id", "MachineAllocations->EmployeeTasks.employee_id"]
+            group: [
+                "Order.id",
+                "MachineAllocations.id",
+                "MachineAllocations->EmployeeTasks.id",
+                "MachineAllocations->EmployeeTasks.employee_id"
+            ]
         });
+
+        // 🔁 For each order, calculate hourly productivity trend
+        for (const order of orders) {
+            // Query for hourly productivity for each order
+            const hourlyTrend = await sequelize.query(
+                `
+                SELECT 
+                    et.employee_id,
+                    DATE_TRUNC('hour', et."updatedAt") AS hour_slot,
+                    COUNT(et.employee_id) AS hourly_completed
+                FROM "EmployeeTasks" et
+                INNER JOIN "MachineAllocations" ma ON et.machine_allocation_id = ma.id
+                WHERE ma.order_id = :orderId
+                GROUP BY et.employee_id, hour_slot
+                ORDER BY hour_slot ASC
+                `,
+                {
+                    replacements: { orderId: order.id },
+                    type: sequelize.QueryTypes.SELECT
+                }
+            );
+
+            // Assign the hourly trend data to the order object
+            order.dataValues.hourlyTrend = hourlyTrend;
+        }
 
         res.json(orders);
     } catch (error) {
@@ -212,7 +241,6 @@ router.get("/orders-productivity", async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-
 
 
 router.get("/time-per-piece", async (req, res) => {

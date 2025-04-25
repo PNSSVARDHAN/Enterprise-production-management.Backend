@@ -19,8 +19,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-
-
 // new path -------------------------------------------------------------------------------------
 router.post("/scan-rfid", async (req, res) => {
     try {

@@ -88,6 +88,103 @@ router.post("/login", async (req, res) => {
   });
 
 
+// Fetch all users
+router.get("/users", async (req, res) => {
+    try {
+        const users = await User.findAll();  // Fetch all users from the database
+        if (!users) {
+            return res.status(404).json({ message: "No users found" });
+        }
+        res.status(200).json(users);  // Send the users data as a response
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// Edit User Route
+router.put("/edit/:id", async (req, res) => {
+    try {
+        const { name, email, role } = req.body;
+        const { id } = req.params;  // Get the user ID from the URL parameter
+
+        // 1. Find user by ID
+        const user = await User.findByPk(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        // 2. Check if the new email is already taken by another user
+        if (email && email !== user.email) {
+            const existingEmail = await User.findOne({ where: { email } });
+            if (existingEmail) return res.status(400).json({ message: "Email already exists" });
+        }
+
+        // 3. Update user details
+        user.name = name || user.name;
+        user.email = email || user.email;
+        user.role = role || user.role;
+
+        await user.save();  // Save updated user data
+
+        res.status(200).json({ message: "User updated successfully", user });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+// Delete User Route
+router.delete("/delete/:id", async (req, res) => {
+    try {
+        const { id } = req.params;  // Get the user ID from the URL parameter
+
+        // 1. Find user by ID
+        const user = await User.findByPk(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        // 2. Delete user
+        await user.destroy();
+
+        res.status(200).json({ message: "User deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+// Update Password Route
+// Update password route
+router.put('/update-password/:id', async (req, res) => {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+  
+    if (!newPassword) {
+      return res.status(400).json({ error: 'New password is required' });
+    }
+  
+    try {
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+  
+      // Find the user by ID and update the password
+      const user = await User.findByPk(id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      // Save the new password in the database
+      user.password = hashedPassword;
+      await user.save();
+  
+      res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to update password' });
+    }
+  });
+  
+
 module.exports = router;
 
 

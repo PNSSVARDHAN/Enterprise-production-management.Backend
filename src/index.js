@@ -21,6 +21,11 @@ const RegScan = require("./models/RegScan");
 const Order = require("./models/Order");
 const OrderStep = require("./models/OrderStep");
 const EmployeeTaskHistory = require("./models/EmployeeTaskHistory");
+const EmployeeTask = require("./models/EmployeeTask");
+const Machine = require("./models/Machine");
+const Employee = require("./models/Employee");  
+const MachineAllocation = require("./models/MachineAllocation");
+const User = require("./models/User"); // Import User model
 
 
 // Initialize Express App
