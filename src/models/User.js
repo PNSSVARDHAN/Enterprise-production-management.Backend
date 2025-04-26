@@ -24,6 +24,14 @@ const User = sequelize.define("User", {
         allowNull: false,
         defaultValue: 'Null',   
     },
+    employee_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'Employees',
+            key: 'id'
+        }
+    }
 });
 
 module.exports = User;

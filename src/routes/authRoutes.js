@@ -2,6 +2,11 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Employee = require("../models/Employee");
+const EmployeeTask = require("../models/EmployeeTask");
+const MachineAllocation = require("../models/MachineAllocation");
+const EmployeeTaskHistory = require("../models/EmployeeTaskHistory");
+
 require("dotenv").config();
 
 const router = express.Router();
@@ -153,7 +158,6 @@ router.delete("/delete/:id", async (req, res) => {
 });
 
 
-// Update Password Route
 // Update password route
 router.put('/update-password/:id', async (req, res) => {
     const { id } = req.params;
@@ -185,6 +189,102 @@ router.put('/update-password/:id', async (req, res) => {
   });
   
 
+
+// app login routes
+
+router.post("/app-login", async (req, res) => {
+    const { username, password } = req.body;  // Changed to username
+    console.log("Received login request for app with username:", username);
+
+    try {
+        // Find user by username (number)
+        const user = await User.findOne({ where: { email: username } });
+
+        if (!user) {
+            console.log("No user found for username:", username);
+            return res.status(401).json({ error: "Invalid username or password" });
+        }
+
+        // Compare password hash with stored password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            console.log("Password mismatch for username:", username);
+            return res.status(401).json({ error: "Invalid username or password" });
+        }
+
+        // Fetch the employee details based on the employee_id in the User model
+        const employee = await Employee.findOne({ where: { id: user.employee_id } });
+
+        if (!employee) {
+            console.log("No employee found with id:", user.employee_id);
+            return res.status(404).json({ error: "Employee data not found" });
+        }
+
+        // Generate JWT token for app login
+        const token = jwt.sign(
+            { id: user.id, username: user.username, role: user.role, employeeId: user.employee_id },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        console.log("App Login successful for username:", username);
+
+        // Send the response with user and employee data
+        res.json({
+            message: "App login successful",
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                username: user.username,  // Username instead of email
+                role: user.role,
+            },
+            employee: {
+                id: employee.id,
+                name: employee.name,
+                rfid: employee.rfid,
+            }
+        });
+
+    } catch (error) {
+        console.error("❌ App Login Error:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
+router.get("/app/employee/tasks/:employeeId", async (req, res) => {
+    const { employeeId } = req.params;
+
+    try {
+        // Fetch all tasks for the employee with related machine allocation info
+        const tasks = await EmployeeTask.findAll({
+            where: { employee_id: employeeId },
+            include: [
+                {
+                    model: MachineAllocation,
+                    attributes: ["machine_id", "step"]
+                }
+            ]
+        });
+
+        // Fetch previous task history for the employee
+        const taskHistory = await EmployeeTaskHistory.findAll({
+            where: { employee_id: employeeId },
+            order: [["working_date", "DESC"]],  // Sort by most recent tasks
+        });
+
+        res.json({
+            message: "Tasks and history fetched successfully",
+            tasks: tasks,
+            taskHistory: taskHistory,
+        });
+
+    } catch (error) {
+        console.error("❌ Error fetching tasks and history:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
 module.exports = router;
 
 
