@@ -14,7 +14,7 @@ const router = express.Router();
 // Register Route
 router.post("/register", async (req, res) => {
     try {
-        const { name, email, password, role } = req.body; // Adding role to the request body
+        const { name, email, password, role , employee_id } = req.body; // Adding role to the request body
 
         // 1. Check if user already exists
         const existingUser = await User.findOne({ where: { email } });
@@ -35,7 +35,8 @@ router.post("/register", async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role // Save the role in the database
+            role,
+            employee_id // Save the role in the database
         });
 
         res.status(201).json({ message: "User registered successfully!" });

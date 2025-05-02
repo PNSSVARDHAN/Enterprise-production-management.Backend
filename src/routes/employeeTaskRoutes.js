@@ -109,7 +109,6 @@ router.post("/complete", async (req, res) => {
 router.get("/assigned", async (req, res) => {
     try {
         const tasks = await EmployeeTask.findAll({
-            // attributes: ['createdAt', 'updatedAt'], 
             include: [
                 { 
                     model: Employee, 

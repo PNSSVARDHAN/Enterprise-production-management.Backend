@@ -16,6 +16,11 @@ const Employee = sequelize.define("Employee", {
         allowNull: false,
         unique: true,
     },
+    mobile:{
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+    }
 }, {
     timestamps: true,  // Automatically adds createdAt & updatedAt
 });
