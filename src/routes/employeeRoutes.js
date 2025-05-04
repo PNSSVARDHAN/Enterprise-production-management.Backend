@@ -111,6 +111,8 @@ router.delete("/:id", async (req, res) => {
         }
 
         // ✅ Delete employee
+        // Delete all users referencing this employee
+        await User.destroy({ where: { employee_id: id } });
         await employee.destroy();
 
         console.log(`✅ Employee Deleted: ${id}`);

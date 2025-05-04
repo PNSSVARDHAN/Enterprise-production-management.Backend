@@ -15,8 +15,22 @@ const sequelize = require("../config/database");
 router.get("/office", async (req, res) => {
     try {
         const totalOrders = await Order.count();
-        const activeOrders = await Order.count({ where: { status: "In Progress" } });
-        const completedOrders = await Order.count({ where: { status: "Completed" } });
+        const activeOrders = await Order.count({ 
+            where: { 
+            current_stage: {
+                [Op.in]: [
+                "Cutting Started",
+                "Cutting Completed",
+                "Sewing is in progress",
+                "Sewing Completed",
+                "Quality Check in progress",
+                "Quality Check Completed",
+                "Packing is in progress"
+                ]
+            }
+            } 
+        });
+        const completedOrders = await Order.count({ where: { current_stage: "Packing Completed" } });
 
         const totalEmployees = await Employee.count();
         const employeesWorking = await EmployeeTask.count({ where: { status: ["Assigned", "In Progress"] } });

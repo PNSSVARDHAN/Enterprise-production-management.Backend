@@ -150,6 +150,55 @@ router.post("/update/:task_id", async (req, res) => {
     }
 });
 
+// ✅ Delete Employee Task
+router.delete("/:task_id", async (req, res) => {
+    try {
+        const { task_id } = req.params;
+
+        if (!task_id) {
+            return res.status(400).json({ error: "Missing task_id" });
+        }
+
+        const task = await EmployeeTask.findByPk(task_id, {
+            include: {
+                model: MachineAllocation,
+                include: {
+                    model: Order, // Assuming this contains order_number and step info
+                }
+            }
+        });
+
+        if (!task) {
+            return res.status(404).json({ error: "Task not found" });
+        }
+
+        // Extract associated data for history
+        const machine = task.MachineAllocation;
+        const order = machine?.Order;
+
+        // Save to history before deletion
+        await EmployeeTaskHistory.create({
+            employee_id: task.employee_id,
+            machine_allocation_id: task.machine_allocation_id,
+            target: task.target,
+            duration: task.duration,
+            order_Number: order?.id || "UNKNOWN",        // Adjust if the column name differs
+            Step_Name: machine?.step || "UNKNOWN",
+            machine_number: machine?.machine_id || "UNKNOWN",
+            working_date: new Date().toISOString().slice(0, 10),
+            action_type: 'DELETE',
+            action_time: new Date()
+        });
+
+        // Delete the task
+        await task.destroy();
+
+        res.status(200).json({ message: "✅ Task deleted successfully" });
+    } catch (error) {
+        console.error("❌ Error deleting task:", error);
+        res.status(500).json({ error: "Error deleting task" });
+    }
+});
 
 
 module.exports = router;

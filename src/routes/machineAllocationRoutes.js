@@ -2,7 +2,7 @@ const express = require("express");
 const MachineAllocation = require("../models/MachineAllocation");
 const EmployeeTask = require("../models/EmployeeTask");
 const Machine = require("../models/Machine");
-
+const Order = require("../models/Order");
 
 const router = express.Router();
 
@@ -23,7 +23,50 @@ router.get("/", async (req, res) => {
     }
 });
 
+// Get all machine allocations grouped by order_id
+router.get("/by-order", async (req, res) => {
+    try {
+        const allocations = await MachineAllocation.findAll({
+            include: [
+                {
+                    model: Order,
+                    attributes: ['order_number', 'product']
+                },
+                {
+                    model: Machine,
+                    attributes: ['machine_number']
+                }
+            ],
+            order: [['order_id', 'ASC']]
+        });
 
+        // Group allocations by order_id
+        const groupedAllocations = allocations.reduce((acc, allocation) => {
+            const orderId = allocation.order_id;
+            if (!acc[orderId]) {
+                acc[orderId] = {
+                    order_id: orderId,
+                    order_number: allocation.Order?.order_number,
+                    product: allocation.Order?.product,
+                    allocations: []
+                };
+            }
+            acc[orderId].allocations.push({
+                id: allocation.id,
+                machine_number: allocation.Machine?.machine_number,
+                step: allocation.step,
+                status: allocation.status,
+                createdAt: allocation.createdAt
+            });
+            return acc;
+        }, {});
+
+        res.status(200).json(Object.values(groupedAllocations));
+    } catch (error) {
+        console.error("❌ Error fetching grouped machine allocations:", error);
+        res.status(500).json({ error: "Error fetching machine allocations" });
+    }
+});
 
 // ✅ Update Machine Status (Check Latest Task & Set to Available if Completed)
 router.post("/update-machine-status", async (req, res) => {
@@ -72,9 +115,6 @@ router.post("/update-machine-status", async (req, res) => {
     }
 });
 
-
-
-
 // ✅ Assign Machine to Step (Ensuring One Machine Per Step)
 router.post("/assign", async (req, res) => {
     try {
@@ -85,12 +125,6 @@ router.post("/assign", async (req, res) => {
         if (!order_id || !step || !machine_id) {
             return res.status(400).json({ error: "Missing order_id, step, or machine_id" });
         }
-
-        // // ✅ Check if the step already has a machine assigned
-        // const existingStepAssignment = await MachineAllocation.findOne({ where: { order_id, step } });
-        // if (existingStepAssignment) {
-        //     return res.status(400).json({ error: `Step ${step} in Order ${order_id} already has Machine ${existingStepAssignment.machine_id}` });
-        // }
 
         // ✅ Check if the machine is already assigned to another step
         const existingMachineAssignment = await MachineAllocation.findOne({ where: { machine_id } });
@@ -112,7 +146,6 @@ router.post("/assign", async (req, res) => {
         res.status(500).json({ error: "Error assigning machine" });
     }
 });
-
 
 // ✅ Free up the machine when employee completes target
 router.post("/free-machine", async (req, res) => {
@@ -142,6 +175,41 @@ router.post("/free-machine", async (req, res) => {
     } catch (error) {
         console.error("❌ Error freeing machine:", error);
         res.status(500).json({ error: "Error freeing machine" });
+    }
+});
+
+// Delete a machine allocation by ID
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find the allocation first to get the machine_id
+        const allocation = await MachineAllocation.findByPk(id);
+        if (!allocation) {
+            return res.status(404).json({ error: "Machine allocation not found" });
+        }
+
+        // Delete any associated employee tasks
+        await EmployeeTask.destroy({
+            where: { machine_allocation_id: id }
+        });
+
+        // Delete the machine allocation
+        await allocation.destroy();
+
+        // Update machine status to Available
+        await Machine.update(
+            { status: "Available" },
+            { where: { id: allocation.machine_id } }
+        );
+
+        res.status(200).json({ 
+            message: "Machine allocation deleted successfully",
+            details: "Associated tasks deleted and machine status updated to Available"
+        });
+    } catch (error) {
+        console.error("❌ Error deleting machine allocation:", error);
+        res.status(500).json({ error: "Error deleting machine allocation" });
     }
 });
 
