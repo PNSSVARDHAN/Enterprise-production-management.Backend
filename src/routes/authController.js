@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
 
         // 🔥 Generate JWT token with 1 day expiry (adjust as needed)
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
+            { id: user.id, email: user.email, role: user.role, employee_id: user.employee_id },  // Include employee_id in the token payload
             process.env.JWT_SECRET,
             { expiresIn: "1d" }  // Set expiry time to 1 day
         );
@@ -53,7 +53,7 @@ exports.login = async (req, res) => {
 
 
 exports.register = async (req, res) => {
-    const { name, email, password, role } = req.body;  // Include role in the request body
+    const { name, email, password, role , employee_id } = req.body;  // Include role in the request body
 
     try {
         // 1. Check if the user already exists
@@ -74,7 +74,8 @@ exports.register = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role  // Save the role
+            role,
+            employee_id  // Save the role
         });
 
         res.status(201).json({ message: "User registered successfully", user: newUser });
