@@ -33,7 +33,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
-    origin: "*", 
+    origin: "https://cutmap-smo.vercel.app",
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: ["Content-Type", "Authorization"]
 };
