@@ -36,6 +36,7 @@ const corsOptions = {
     origin: "https://cutmap-smo.vercel.app",
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: ["Content-Type", "Authorization"]
+    //comment
 };
 
 app.use(cors(corsOptions)); 
