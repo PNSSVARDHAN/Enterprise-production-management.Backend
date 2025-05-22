@@ -35,7 +35,8 @@ const PORT = process.env.PORT || 5000;
 const corsOptions = {
     origin: [
         "https://cutmap-smo.vercel.app",
-        "https://cutmapsmo.vercel.app"
+        "https://cutmapsmo.vercel.app",
+        "http://localhost:3000",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
@@ -106,8 +107,8 @@ setInterval(sendLiveUpdate, 3000);
 // Start Server
 sequelize.sync({ alter: true })
     .then(() => {
-        server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+        server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     })
-    .catch((err) => console.error("❌ Database Sync Failed:", err));
+    .catch((err) => console.error("Database Sync Failed:", err));
 
 ////testing 
