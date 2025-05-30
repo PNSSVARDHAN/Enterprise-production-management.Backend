@@ -26,6 +26,7 @@ const Machine = require("./models/Machine");
 const Employee = require("./models/Employee");  
 const MachineAllocation = require("./models/MachineAllocation");
 const User = require("./models/User"); // Import User model
+const HourlyProduction = require("./models/HourlyProduction");
 
 
 // Initialize Express App
@@ -110,5 +111,3 @@ sequelize.sync({ alter: true })
         server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     })
     .catch((err) => console.error("Database Sync Failed:", err));
-
-////testing 

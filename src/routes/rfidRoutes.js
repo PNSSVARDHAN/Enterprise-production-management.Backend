@@ -10,7 +10,7 @@ const router = express.Router();
 // ✅ Log RFID Scan & Increment Work Count
 router.post("/scan", async (req, res) => {
     try {
-        console.log("📡 Received RFID scan request:", req.body);
+        console.log("Received RFID scan request:", req.body);
 
         const { rfid } = req.body;
         if (!rfid) {

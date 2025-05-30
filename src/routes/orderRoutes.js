@@ -65,7 +65,6 @@ router.get("/assigned-machines", async (req, res) => {
 });
 
 
-// create order 
 // ✅ Create a new order and store steps
 router.post("/add", async (req, res) => {
     try {
@@ -167,7 +166,7 @@ router.get("/progress", async (req, res) => {
     }
 });
 
-// ✅ Delete Order by ID
+ // ✅ Delete Order by ID
 router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -223,7 +222,7 @@ router.put("/update/:orderId", async (req, res) => {
 });
 
 
-// routes/orders.js
+// // routes/orders.js
 router.post('/update-stage', async (req, res) => {
     try {
       const { id, current_stage } = req.body;

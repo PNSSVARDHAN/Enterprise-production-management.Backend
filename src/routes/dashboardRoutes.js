@@ -30,7 +30,17 @@ router.get("/office", async (req, res) => {
             }
             } 
         });
-        const completedOrders = await Order.count({ where: { current_stage: "Packing Completed" } });
+        const completedOrders = await Order.count({ 
+            where: { 
+            current_stage: {
+                [Op.in]: [
+                "Packing Completed",
+                "Ready for Dispatch",
+                "Dispatched"
+                ]
+            }
+            } 
+        });
 
         const totalEmployees = await Employee.count();
         const employeesWorking = await EmployeeTask.count({ where: { status: ["Assigned", "In Progress"] } });
