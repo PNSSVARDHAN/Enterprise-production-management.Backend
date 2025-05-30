@@ -263,8 +263,4 @@ router.get('/api/orders/:orderId/steps', async (req, res) => {
     }
   });
   
-
-  
-
-
 module.exports = router;
